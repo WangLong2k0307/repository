@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>报警记录</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+
+    <script src="static/assets/js/jquery-2.1.0.min.js"></script>
+    <script src="static/assets/js/getParameter.js"></script>
+    <!-- &lt;!&ndash;导入布局js，共享base&ndash;&gt;
+     <script type="text/javascript" src="static/assets/js/include.js"></script>
+     <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+     <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+
+     <meta name="description" content="Ela Admin - HTML5 Admin Template">
+     <meta name="viewport" content="width=device-width, initial-scale=1">-->
+
+    <link rel="stylesheet" href="static/assets/css/normalize.css">
+    <link rel="stylesheet" href="static/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="static/assets/css/themify-icons.css">
+    <link rel="stylesheet" href="static/assets/css/pe-icon-7-filled.css">
+    <link rel="stylesheet" href="static/assets/css/flag-icon.min.css">
+    <link rel="stylesheet" href="static/assets/css/cs-skin-elastic.css">
+    <!-- <link rel="stylesheet" href="static/assets/css/lib/datatable/dataTables.bootstrap.min.css">-->
+    <link rel="stylesheet" href="static/assets/css/style.css">
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var name = getParameter("name");
+            var pageSize = getParameter("pageSize");
+            var cooki = document.cookie;
+            //alert(pageSize);
+
+            //获取每页展示条数
+            if (cooki != ""){
+                cooki = "{\"" + cooki + "\"}";
+                cooki = cooki.replace(/\s*/g, "").replace(/=/g, '":"').replace(/;/g, '","');
+                var json = eval("(" + cooki + ")"); //将coolies转成json对象
+                document.getElementById("mySelect").options[json.index].selected = true;
+                if (pageSize == null){
+                    pageSize = document.getElementById("mySelect").options[json.index].value;
+                }
+            }
+            if (pageSize == null){
+                pageSize = 10;
+            }
+            if(name){
+                //转码
+                name = window.decodeURIComponent(name);
+            }
+            if (name == null){
+                name = "";
+            }
+
+            load(null, pageSize, name, null, null);
+
+        });
+
+        function load(currentPage, pageSize, name, infor, sta) {
+            var name;
+            var pageSize;
+            var subBtn = document.getElementById("form1");
+            var obj = document.getElementById("mySelect");
+            var valuename = document.getElementById("name");
+            if (valuename.value.length != 0 ){
+                subBtn.onsubmit = function () {
+                    name = valuename.value;
+                    obj.onchange = function () {
+
+                        var index = obj.selectedIndex;
+                        document.cookie = 'index='+index;
+                        pageSize = obj.options[index].value;
+
+
+                    };
+                };
+            }else {
+
+                obj.onchange = function () {
+
+                    var index = obj.selectedIndex;
+
+                    pageSize = obj.options[index].value;
+                    document.cookie = 'index='+index;
+                    //alert(pageSize);
+                    document.form1.submit();
+                };
+
+            }
+
+
+            //document.myForm.submit();
+
+            //发送ajax请求
+            $.get("fireServlet",{currentPage:currentPage, pageSize:pageSize, name:name, infor:infor, sta:sta},function (pb) {
+                //var name = window.decodeURIComponent(getParameter("name"));
+
+                //var options=$("#select option:selected");
+                //解析pageBean数据，展示到页面上
+                //分页栏展示
+                $("#start").html((pb.currentPage - 1) * pageSize + 1);
+                $("#end").html((pageSize*pb.currentPage < pb.totalCount) ? pageSize*pb.currentPage : pb.totalCount);
+                $("#totalCount").html(pb.totalCount);
+                //页码展示
+                var list = '';
+                var previous = '<li onclick="javascript:load('+((pb.currentPage <= 1) ? 1 : (pb.currentPage - 1))+','+pageSize+',\''+name+'\')">\n' +
+                    '                        <a href="javascript:void(0);" aria-label="Previous">\n' +
+                    '                            <span aria-hidden="true" href="">Previous</span>\n' +
+                    '                        </a>\n' +
+                    '                    </li>';
+                list += previous;
+
+                //展示分页页码使得展示的页码为10
+                var begin;
+                var end;
+                //1、显示10个页面
+                if(pb.totalPage < 10){
+                    //总页码小于10页
+                    begin = 1;
+                    end = pb.totalPage;
+                }else {
+                    //总页码大于10页
+                    begin = pb.currentPage - 5;
+                    end = pb.currentPage + 4;
+
+                    //如果前边不够5个，后边补齐10个
+                    if (begin < 1){
+                        begin = 1;
+                        end = begin + 9;
+                    }
+                    if (end > pb.totalPage){
+                        end = pb.totalPage;
+                        begin = end - 9;
+                    }
+                }
+                for (var i = begin; i <= end; i++) {
+                    var li ;
+                    if (i == pb.currentPage){
+                        li = '<li class="active" onclick="javascript:load('+i+','+pageSize+',\''+name+'\')"><a href="javascript:void(0);">'+i+'</a></li>';
+                    }else {
+                        li = '<li onclick="javascript:load('+i+','+pageSize+',\''+name+'\')"><a href="javascript:void(0);">'+i+'</a></li>';
+                    }
+
+                    list += li;
+                }
+
+                var next = '<li onclick="javascript:load('+((pb.currentPage == pb.totalPage) ? pb.totalPage : (pb.currentPage + 1))+','+pageSize+',\''+name+'\')">\n' +
+                    '                        <a href="javascript:void(0);" aria-label="Next">\n' +
+                    '                            <span aria-hidden="true">Next</span>\n' +
+                    '                        </a>\n' +
+                    '                    </li>';
+                list += next;
+                $("#pageNum").html(list);
+                var lis = '<tr>\n' +
+                    '                        <th>#</th>\n' +
+                    '                        <th>设备名称</th>\n' +
+                    '                        <th>使用单位</th>\n' +
+                    '                        <th>设备位置</th>\n' +
+                    '                        <th>故障类型</th>\n' +
+                    '                        <th>报警日期</th>\n' +
+                    '                        <th>联系人</th>\n' +
+                    '                        <th>联系电话</th>\n' +
+                    '                    </tr>';
+                for (var i = 1; i < pb.list.length + 1; i++) {
+                    var inform = pb.list[i-1];
+                    var tr = '<tr >\n' +
+                        '                        <td>'+(i+(pb.currentPage-1)*pageSize)+'</td>\n' +
+                        '                        <td>'+inform.eq_name+'</td>\n' +
+                        '                        <td>'+inform.use_department+'</td>\n' +
+                        '                        <td>'+inform.address+'</td>\n' +
+                        '                        <td>'+inform.type+'</td>\n' +
+                        '                        <td>'+inform.alarmtime+'</td>\n' +
+                        '                        <td>'+inform.contact+'</td>\n' +
+                        '                        <td>'+inform.contact_tel+'</td>\n' +
+                        '                    </tr>';
+                    lis += tr;
+                }
+
+                $("#log").html(lis);
+
+            });
+        }
+
+    </script>
+</head>
+<body>
+<div class="right-panel">
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header" style="background-color: #EE3B3B">
+                        <strong class="card-title">报警记录</strong>
+                    </div>
+                    <form id="form1" name="form1">
+                        <!--form method="post" id="myForm" name="myForm"-->
+                        <select id="mySelect" name="pageSize" >
+                            <option value="10">10</option>
+                            <option value="9">9</option>
+                            <option value="8">8</option>
+                            <option value="7">7</option>
+                            <option value="6">6</option>
+                            <option value="1">1</option>
+                        </select>
+                        <!--/form-->
+
+                        <input id="name" type="text" name="name">
+
+                    </form>
+                    <table border="1" class="table table-bordered table-hover" id="log">
+
+                    </table>
+                </div>
+                <div>showing <span id="start"></span> to <span id="end"></span> of <span id="totalCount"></span> entries</div>
+                <div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination" id="pageNum">
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div><!-- .animated -->
+</div>
+
+<!--引入base-->
+<div id="newbase"></div>
+<!--导入布局js-->
+<script type="text/javascript" src="static/assets/js/include.js"></script>
+
+</body>
+</html>

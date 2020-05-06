@@ -1,0 +1,563 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+<!--<![endif]-->
+
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>修改账号</title>
+    <meta name="description" content="Ela Admin - HTML5 Admin Template">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="static/assets/js/jquery-3.3.1.js"></script>
+
+
+    <link rel="stylesheet" href="static/assets/css/normalize.css">
+    <link rel="stylesheet" href="static/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="static/assets/css/themify-icons.css">
+    <link rel="stylesheet" href="static/assets/css/pe-icon-7-filled.css">
+    <link rel="stylesheet" href="static/assets/css/flag-icon.min.css">
+    <link rel="stylesheet" href="static/assets/css/cs-skin-elastic.css">
+    <link rel="stylesheet" href="static/assets/css/lib/datatable/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="static/assets/css/style.css">
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/html5shiv/3.7.3/html5shiv.min.js"></script> -->
+
+    <style>
+        .amap-icon img,
+        .amap-marker-content img{
+            width: 45px;
+            height: 45px;
+        }
+        /*label的样式*/
+        .amap-marker-label{
+            position: absolute;
+            z-index: 2;
+            border: 1px solid #ccc;
+            background-color: white;
+            　white-space: nowrap;
+            　cursor: default;
+            　padding: 3px;
+            　font-size: 12px;
+            　line-height: 14px;
+        }
+        /*字的颜色*/
+        .navbar .navbar-nav li > a {
+            width: 100%;
+            max-width: 100%;
+            font-size: 14px;
+            color: #707070;
+        }
+
+    </style>
+
+
+    <script>
+        var uid;
+
+        $(function () {
+
+            //loginuser:现登录用户
+            $.get("user/findOne",{},function (luser) {
+                uid=luser.uid;
+            });
+
+            $.get("user/findOne",{},function (user) {
+                $('#name-input').val(''+user.name+'');//填充内容
+                $('#username-input').val(''+user.username+'');//填充内容
+                $('#password-input').val(''+user.password+'');//填充内容
+                $('#fusername-input').val(''+user.fusername+'');//填充内容
+                $('#location-input').val(''+user.location+'');//填充内容
+                $('#contact-input').val(''+user.contact+'');//填充内容
+                $('#contacttel-input').val(''+user.contacttel+'');//填充内容
+                $('#description-input').val(''+user.description+'');//填充内容
+
+                var arr=new Array();
+                arr=user.date.split('.');
+                user.date=arr[0];
+
+                $('#date-input').val(''+user.date+'');//填充内容
+            });
+
+            $("#btn_add").click(function(){
+                //跳转路径
+                location.href="addUser.html";
+            });
+
+            //给搜索按钮绑定单击事件，获取输入框里的内容
+            $("#search-button").click(function(){
+                //获取内容
+                var name=$("#search_input").val();
+                var pageSize=$('#select').val();
+
+
+                //调用函数
+                load(pageSize,null,name,null);
+            });
+
+            //给刷新按钮绑定单击事件，获取下拉框里的内容
+            $("#reload").click(function(){
+                var pageSize=$('#select').val();
+
+                //search_input框清零
+                $("#search_input").val("");
+
+                //调用函数
+                load(pageSize,null,null,null);
+            });
+
+            load(null,null,null,null);
+        });
+
+
+        //点击修改
+        function clickModify($this) {
+            var sureid = $($this).attr('sureid');
+            var cancelid = $($this).attr('cancelid');
+            var inputid = $($this).attr('inputid');
+            $($this).css('display','none');
+            $('#'+sureid+'').css('display','block');
+            $('#'+cancelid+'').css('display','block');
+            $('#'+inputid+'').removeAttr("readonly");
+
+        }
+
+        //点击确定
+        function clickSure($this) {
+            var modifyid = $($this).attr('modifyid');
+            var cancelid = $($this).attr('cancelid');
+            var inputid = $($this).attr('inputid');
+            var name =$('#'+inputid+'').prop('name');
+            var value=$('#'+inputid+'').val();
+
+
+            $.get("user/updateByName",{suid:uid,name:name,value:value},function () {
+
+            });
+
+            $($this).css('display','none');
+            $('#'+modifyid+'').css('display','block');
+            $('#'+cancelid+'').css('display','none');
+            $('#'+inputid+'').attr('readonly','readonly');
+
+        }
+
+        //点击取消
+        function clickCancel($this) {
+            var sureid = $($this).attr('sureid');
+            var modifyid = $($this).attr('modifyid');
+            var inputid = $($this).attr('inputid');
+            var name =$('#'+inputid+'').prop('name');
+            var value;
+
+
+            $.get("user/findByUid",{suid:uid},function (suser) {
+                if(name=="name"){
+                    value=suser.name;
+                }else if(name=="username"){
+                    value=suser.username;
+                }else if(name=="password"){
+                    value=suser.password;
+                }else if(name=="location"){
+                    value=suser.location;
+                }else if(name=="contact"){
+                    value=suser.contact;
+                }else if(name=="contacttel"){
+                    value=suser.contacttel;
+                }else if(name=="description"){
+                    value=suser.description;
+                }
+
+                $("#"+name+"-p").html("<input type=\"text\" id=\""+name+"-input\" name=\""+name+"\" readonly=\"readonly\" value=\""+value+"\" class=\"form-control\">");
+            });
+
+            $($this).css('display','none');
+            $('#'+sureid+'').css('display','none');
+            $('#'+modifyid+'').css('display','block');
+
+        }
+
+
+
+        function dropchild(duid) {
+
+            //查看权限
+            $.get("user/checkByRid",{},function (role) {
+                if(role.dsub_account=='0'){
+                    alert("您无权删除子账号!");
+                }else {
+                    //duid:所点击的子账号的id
+                    $.get("user/dropchild",{duid:duid},function () {
+                        location.reload()
+                    });
+                }
+            });
+        }
+
+        function rank($this) {  //点击排序
+            var pageSize=$('#select').val();
+            var name=$("#search_input").val();
+            var orderby=$($this).prop('id');
+
+
+            //调用函数
+            load(pageSize,null,name,orderby);
+
+        }
+
+
+        function load(pageSize,currentPage,name,orderby){
+            //发送ajax请求，请求route/pageQuery,传递cid
+            $.get("user/pageQuery",{pageSize:pageSize,currentPage:currentPage,name:name,orderby:orderby},function (pb) {
+
+                if(name){
+                    //获取到的name值不能自动加引号
+                    name='\''+name+'\'';
+                }
+                if(orderby){
+                    //获取到的orderby值不能自动加引号
+                    orderby='\''+orderby+'\'';
+                }
+
+
+                //解析pagebean数据，展示到页面上
+
+                //展示总记录数
+                $("#totalCount").html(pb.totalCount);
+                $("#firstentry").html((parseInt(pb.currentPage)-1)*parseInt(pb.pageSize)+1);
+                $("#lastentry").html((parseInt(pb.currentPage)-1)*parseInt(pb.pageSize)+pb.list.length);
+
+                //1.列表数据展示
+                var suser_lis = "";
+
+                for (var i = 0; i < pb.list.length; i++) {
+                    //获取{rid:1,rname:"xxx"}
+                    var suser = pb.list[i];
+
+                    var arr=new Array();
+                    arr=suser.date.split('.');
+                    suser.date=arr[0];
+
+                    var li = '                        <tr>\n' +
+                        '                            <td>'+suser.name+'</td>\n' +
+                        '                            <td>'+suser.fusername+'</td>\n' +
+                        '                            <td>'+suser.location+'</td>\n' +
+                        '                            <td>'+suser.date+'</td>\n' +
+                        '                            <td>'+suser.contact+'</td>\n' +
+                        '                            <td>'+suser.contacttel+'</td>\n' +
+                        '                            <td><a href="equipments.html?uid='+suser.uid+'">查看</a></td>\n' +
+                        '                            <td><a href="editSUser.html?uid='+suser.uid+'">修改</a></td>\n' +
+                        '                            <td><a href="javascript:void(0);" onclick="dropchild('+suser.uid+');">删除</a></td>\n' +
+                        '                        </tr>'
+                    suser_lis += li;
+                }
+                $("#user_tr").html(suser_lis);
+
+                //2.分页工具条数据展示
+                var lis = "";
+
+
+
+                /*var fristPage = '<li onclick="javascript:load('+pageSize+',1,'+name+','+orderby+')"><a href="javascript:void(0)">first</a></li>';*/
+
+                //计算上一页的页码
+                var beforeNum =  pb.currentPage - 1;
+
+                if(beforeNum <= 0){
+                    beforeNum = 1;
+                }
+
+
+                var beforePage = '<li onclick="javascript:load('+pageSize+','+beforeNum+','+name+','+orderby+')"><a href="javascript:void(0)"><span aria-hidden="true" href="">Previous</span></a></li>';
+
+/*                lis += fristPage;*/
+                lis += beforePage;
+                //展示分页页码
+                /*
+                    1.一共展示10个页码，能够达到前5后4的效果
+                    2.如果前边不够5个，后边补齐10个
+                    3.如果后边不足4个，前边补齐10个
+                */
+
+                // 定义开始位置begin,结束位置 end
+                var begin; // 开始位置
+                var end ; //  结束位置
+
+
+                //1.要显示10个页码
+                if(pb.totalPage < 10){
+                    //总页码不够10页
+
+                    begin = 1;
+                    end = pb.totalPage;
+                }else{
+                    //总页码超过10页
+
+                    begin = pb.currentPage - 5 ;
+                    end = pb.currentPage + 4 ;
+                    //2.如果前边不够5个，后边补齐10个
+                    if(begin < 1){
+                        begin = 1;
+                        end = begin + 9;
+                    }
+                    //3.如果后边不足4个，前边补齐10个
+                    if(end > pb.totalPage){
+                        end = pb.totalPage;
+                        begin = end - 9 ;
+                    }
+                }
+
+                var lastNum=1;
+                for (var i = begin; i <= end ; i++) {
+                    var li;
+                    //判断当前页码是否等于i
+                    if(pb.currentPage == i){
+
+                        li = '<li class="active" onclick="javascript:load('+pageSize+','+i+','+name+','+orderby+')"><a style="color:grey" href="javascript:void(0)">'+i+'</a></li>';
+
+                    }else{
+                        //创建页码的li
+                        li = '<li onclick="javascript:load('+pageSize+','+i+','+name+','+orderby+')"><a href="javascript:void(0)">'+i+'</a></li>';
+                    }
+                    //拼接字符串
+                    lis += li;
+                    lastNum=i;
+                }
+
+                //计算上一页的页码
+                var nextNum =  pb.currentPage + 1;
+                if(nextNum >= lastNum){
+                    nextNum = lastNum;
+                }
+
+                var nextPage = '<li onclick="javascript:load('+pageSize+','+nextNum+','+name+','+orderby+')"><a href="javascript:void(0)"><span aria-hidden="true">Next</span></a></li>';
+                /*var lastPage = '<li onclick="javascript:load('+pageSize+','+nextNum+','+name+','+orderby+')"><a href="javascript:void(0)">last</a></li>';*/
+                lis += nextPage;
+                /*lis += lastPage;*/
+
+                //将lis内容设置到 ul
+                $("#pageNum").html(lis);
+
+            });
+        }
+
+    </script>
+</head>
+
+
+<body>
+<div class="right-panel">
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header" style="background-color: #ff9933;">
+                        <strong class="card-title">修改用户信息</strong>
+                        <a>
+                            <button id="btn_add" type="button" class="float-right btn btn-outline-primary btn-sm">
+                                <i class="fa fa-plus"></i>
+                                &nbsp; 添加子账号
+                            </button>
+                        </a>
+                    </div>
+                    <div class="card-body card-block">
+                        <form action="#" method="post" enctype="multipart/form-data" class="form-horizontal">
+
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="name-input" class=" form-control-label">名称</label></div>
+                                <div id='name-p' class="col-6 col-md-7">
+                                    <input type="text" id="name-input" name="name" readonly="readonly" value="" class="form-control">
+
+                                </div>
+                                <div class='col-4 col-md-2'>
+                                    <button id='name-modify' type="button" onclick='clickModify(this)' class="btn btn-link" style='display: block' sureid="name-sure" cancelid="name-cancel" inputid="name-input">修改</button>
+                                    <button id='name-sure' style='display: none' onclick='clickSure(this)' type="button" modifyid="name-modify" cancelid="name-cancel" inputid="name-input" class="btn btn-outline-primary">确定</button>
+                                    <button id='name-cancel' style='display: none' onclick='clickCancel(this)' type="button" sureid="name-sure" modifyid="name-modify" inputid="name-input" class="btn btn-outline-danger">取消</button>
+                                </div>
+                            </div>
+
+                            <!-- username -->
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="username-input" class=" form-control-label">用户名</label></div>
+                                <div id='username-p' class="col-6 col-md-7">
+                                    <input type="text" id="username-input" name="username" readonly="readonly" value="" class="form-control">
+
+                                </div>
+                                <div class='col-4 col-md-2'>
+                                    <button id='username-modify' type="button" onclick='clickModify(this)' class="btn btn-link" style='display: block' sureid="username-sure" cancelid="username-cancel" inputid="username-input">修改</button>
+                                    <button id='username-sure' style='display: none' onclick='clickSure(this)' type="button" modifyid="username-modify" cancelid="username-cancel" inputid="username-input" class="btn btn-outline-primary">确定</button>
+                                    <button id='username-cancel' style='display: none' onclick='clickCancel(this)' type="button" sureid="username-sure" modifyid="username-modify" inputid="username-input" class="btn btn-outline-danger">取消</button>
+                                </div>
+                            </div>
+
+                            <!-- password -->
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="password-input" class=" form-control-label">密码</label></div>
+                                <div id='password-p' class="col-6 col-md-7">
+                                    <input type="text" id="password-input" name="password" readonly="readonly" value="" class="form-control">
+
+                                </div>
+                                <div class='col-4 col-md-2'>
+                                    <button id='password-modify' type="button" onclick='clickModify(this)' class="btn btn-link" style='display: block' sureid="password-sure" cancelid="password-cancel" inputid="password-input">修改</button>
+                                    <button id='password-sure' style='display: none' onclick='clickSure(this)' type="button" modifyid="password-modify" cancelid="password-cancel" inputid="password-input" class="btn btn-outline-primary">确定</button>
+                                    <button id='password-cancel' style='display: none' onclick='clickCancel(this)' type="button" sureid="password-sure" modifyid="password-modify" inputid="password-input" class="btn btn-outline-danger">取消</button>
+                                </div>
+                            </div>
+
+                            <!-- fusername -->
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label class=" form-control-label">父账号</label></div>
+                                <div class="col-12 col-md-9">
+                                    <input type="text" id="fusername-input" name="fusername" readonly="readonly" value="" class="form-control">
+                                </div>
+                            </div>
+
+
+                            <!-- address -->
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="location-input" class=" form-control-label">位置</label></div>
+                                <div id='location-p' class="col-6 col-md-7">
+                                    <input type="text" id="location-input" name="location" readonly="readonly" value="" class="form-control">
+                                </div>
+                                <div class='col-4 col-md-2'>
+                                    <button id='location-modify' onclick='clickModify(this)' type="button" class="btn btn-link" style='display: block' sureid="location-sure" cancelid="location-cancel"  inputid="location-input">修改</button>
+                                    <button id='location-sure' onclick='clickSure(this)' style='display: none' type="button" class="btn btn-outline-primary" modifyid="location-modify" cancelid="location-cancel" inputid="location-input">确定</button>
+                                    <button id='location-cancel' onclick='clickCancel(this)' style='display: none' type="button" class="btn btn-outline-danger" sureid="location-sure" modifyid="location-modify" inputid="location-input">取消</button>
+                                </div>
+                            </div>
+                            <!-- 联系人 -->
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="contact-input" class=" form-control-label">联系人</label></div>
+                                <div class="col-6 col-md-7" id='contact-p'>
+                                    <input type="text" id="contact-input" name="contact" readonly="readonly" value="" class="form-control">
+
+                                </div>
+                                <div class='col-4 col-md-2'>
+                                    <button id='contact-modify' onclick='clickModify(this)' type="button" class="btn btn-link" style='display: block' sureid="contact-sure" cancelid="contact-cancel" inputid="contact-input">修改</button>
+                                    <button id='contact-sure' onclick='clickSure(this)' style='display: none' type="button" class="btn btn-outline-primary" modifyid="contact-modify" cancelid="contact-cancel" inputid="contact-input">确定</button>
+                                    <button id='contact-cancel' onclick='clickCancel(this)' style='display: none' type="button" class="btn btn-outline-danger" sureid="contact-sure" modifyid="contact-modify" inputid="contact-input">取消</button>
+                                </div>
+                            </div>
+
+                            <!-- contact_tel -->
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="contacttel-input" class=" form-control-label">联系人电话</label></div>
+                                <div id='contacttel-p' class="col-6 col-md-7">
+                                    <input type="text" id="contacttel-input" name="contacttel" readonly="readonly" value="" class="form-control">
+
+                                </div>
+                                <div class='col-4 col-md-2'>
+                                    <button id='contacttel-modify' onclick='clickModify(this)' type="button" class="btn btn-link" style='display: block' sureid="contacttel-sure" cancelid="contacttel-cancel" inputid="contacttel-input">修改</button>
+                                    <button id='contacttel-sure' onclick='clickSure(this)' style='display: none' type="button" class="btn btn-outline-primary" modifyid="contacttel-modify" cancelid="contacttel-cancel" inputid="contacttel-input">确定</button>
+                                    <button id='contacttel-cancel' onclick='clickCancel(this)' style='display: none' type="button" class="btn btn-outline-danger" sureid="contacttel-sure" modifyid="contacttel-modify" inputid="contacttel-input">取消</button>
+                                </div>
+                            </div>
+
+                            <!-- describe -->
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="description-input" class=" form-control-label">描述</label></div>
+                                <div id='description-p' class="col-6 col-md-7">
+                                    <input type="text" id="description-input" name="description" readonly="readonly" value="" class="form-control">
+
+                                </div>
+                                <div class='col-4 col-md-2'>
+                                    <button id='description-modify' type="button" onclick='clickModify(this)' style='display: block' sureid="description-sure" cancelid="description-cancel" inputid="description-input" class="btn btn-link">修改</button>
+                                    <button id='description-sure' style='display: none' onclick='clickSure(this)' type="button" modifyid="description-modify" cancelid="description-cancel" inputid="description-input" class="btn btn-outline-primary">确定</button>
+                                    <button id='description-cancel' style='display: none' onclick='clickCancel(this)' type="button" sureid="description-sure" modifyid="description-modify" inputid="description-input" class="btn btn-outline-danger">取消</button>
+                                </div>
+                            </div>
+                            <!--create_time-->
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label class=" form-control-label">创建时间</label></div>
+                                <div class="col-12 col-md-9">
+                                    <input type="text" id="date-input" name="description" readonly="readonly" value="" class="form-control">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header" style="background-color: #ff9933;;">
+                        <strong class="card-title">子账号</strong>
+                    </div>
+
+                    <nobr>Show<select id="select">
+                    <option value ="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>entries
+                    <button id="reload">确定</button>
+
+                    <input name="" type="text" placeholder="请输入用户名称" id="search_input" autocomplete="off">
+                    <button id="search-button">搜索</button></nobr>
+
+                    <div class="card-body">
+                        <table id="bootstrap-data-table" class="table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th>名称<a id="name_asc" onclick="rank(this)">↑</a>
+                                    <a id="name_desc" onclick="rank(this)">↓</a></th>
+                                <th>父账号<a id="fusername_asc" onclick="rank(this)">↑</a>
+                                    <a id="fusername_desc" onclick="rank(this)">↓</a></th>
+                                <th>位置<a id="location_asc" onclick="rank(this)">↑</a>
+                                    <a id="location_desc" onclick="rank(this)">↓</a></th>
+                                <th>创建时间<a id="date_asc" onclick="rank(this)">↑</a>
+                                    <a id="date_desc" onclick="rank(this)">↓</a></th>
+                                <th>联系人<a id="contact_asc" onclick="rank(this)">↑</a>
+                                    <a id="contact_desc" onclick="rank(this)">↓</a></th>
+                                <th>联系人电话<a id="contacttel_asc" onclick="rank(this)">↑</a>
+                                    <a id="contacttel_desc" onclick="rank(this)">↓</a></th>
+                                <th>设备</th>
+                                <th>详细信息</th>
+                                <th>删除</th>
+                            </tr>
+                            </thead>
+                            <tbody id="user_tr">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div>
+
+                    </div>
+
+                    <div>
+                        showing <span id="firstentry"></span> to <span id="lastentry"></span> of <span id="totalCount"></span> entries
+                    </div>
+                    <div>
+                        <nav aria-label="Page navigation" style="float: right;margin-right: 5%">
+                            <ul class="pagination" id="pageNum">
+
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--引入base-->
+<div id="newbase"></div>
+<!--导入布局js-->
+<script type="text/javascript" src="static/assets/js/include.js"></script>
+
+</body>
+</html>

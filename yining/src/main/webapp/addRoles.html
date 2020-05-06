@@ -1,0 +1,226 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>添加角色</title>
+    <meta name="description" content="Ela Admin - HTML5 Admin Template">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="static/assets/css/normalize.css">
+    <link rel="stylesheet" href="static/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/assets/css/bootstrapp.css">
+    <link rel="stylesheet" href="static/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="static/assets/css/themify-icons.css">
+    <link rel="stylesheet" href="static/assets/css/pe-icon-7-filled.css">
+    <link rel="stylesheet" href="static/assets/css/flag-icon.min.css">
+    <link rel="stylesheet" href="static/assets/css/cs-skin-elastic.css">
+<!--    <link rel="stylesheet" href="static/assets/css/lib/datatable/dataTables.bootstrap.min.css">-->
+    <link rel="stylesheet" href="static/assets/css/style.css">
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/html5shiv/3.7.3/html5shiv.min.js"></script> -->
+
+    <script>
+        //校验角色名
+        function checkRname(){
+            //获取用户名的值
+            var rname=$("#rname").val();
+            //定义正则
+            var reg_rname=/^[\u4e00-\u9fa5_a-zA-Z0-9]{1,20}$/;
+            //给出提示信息
+            var flag=reg_rname.test(rname);
+            if (flag) {
+                //合法
+                $("#rname").css("border","1px solid green");
+            }else{
+                //不合法
+                $("#rname").css("border","1px solid red");
+                /*$("#errorMsg").html("角色名不能为空");*/
+                alert("角色名不能为空");
+            }
+            return flag;
+        }
+        $(function () {
+            //当表单提交时，调用所有的校验方法
+            $("#addForm").submit(function () {
+                //1.发送数据到服务器
+                if(checkRname()){
+                    //校验通过，发送ajax请求，提交表单的数据
+                    $.post("addRoleServlet",$(this).serialize(),function (data) {
+                        //处理响应数据
+                        if (data.flag) {
+                            //添加成功
+                            alert("添加成功！");
+                            location.href="roles.html";
+                        }else {
+                            //注册失败，errorMsg添加提示信息
+                            /*$("#errorMsg").html(data.errorMsg);*/
+                            alert(data.errorMsg);
+                        }
+                    });
+                }
+                //2.跳转页面
+                return false;
+            });
+            $("#rname").blur(checkRname);
+        });
+    </script>
+
+    <style>
+        .amap-icon img,
+        .amap-marker-content img{
+            width: 45px;
+            height: 45px;
+        }
+        /*label的样式*/
+        .amap-marker-label{
+            position: absolute;
+            z-index: 2;
+            border: 1px solid #ccc;
+            background-color: white;
+            　white-space: nowrap;
+            　cursor: default;
+            　padding: 3px;
+            　font-size: 12px;
+            　line-height: 14px;
+        }
+        /*字的颜色*/
+        .navbar .navbar-nav li > a {
+            width: 100%;
+            max-width: 100%;
+            font-size: 14px;
+            color: #707070;
+        }
+
+        /* 以下是设备监控、电气监控、数据统计、报警记录、设备管理前页面的css */
+        /* 自己创建一个css然后放进去，我怕打乱你文件顺序就全放在这了 */
+        /* 设备监控 */
+        .amap-icon img,
+        .amap-marker-content img{
+            width: 45px;
+            height: 45px;
+        }
+        /*label的样式*/
+        .amap-marker-label{
+            position: absolute;
+            z-index: 2;
+            border: 1px solid #ccc;
+            background-color: white;
+            　white-space: nowrap;
+            　cursor: default;
+            　padding: 3px;
+            　font-size: 12px;
+            　line-height: 14px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="right-panel">
+    <div class="content">
+        <div class="content">
+            <form class="" id="addForm" style="">
+                <div class="panel panel-primary" style="overflow: hidden;border-color: #ff9933">
+                    <div class="panel-heading" style="background: #ff9933;border-color: #ff9933">角色添加</div>
+                    <br><br>
+                    <div class="panel panel-default" style="width: 94%;margin:0 auto">
+                        <!-- Table -->
+                        <table class="table">
+                            <tr>
+                                <td style="vertical-align: middle">角色名称</td>
+                                <td>
+                                    <div class="input-group">
+                                        <input type="text" name="rname" style="width: 240%" id="rname" class="form-control" placeholder="请输入角色名称" aria-describedby="basic-addon1"><p id="errorMsg" style="color: red;"></p>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle">备注</td>
+                                <td>
+                                    <div class="input-group">
+                                        <input type="text" name="remark" style="width: 240%" class="form-control" placeholder="请输入备注" aria-describedby="basic-addon1">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle">添加角色权限</td>
+                                <td>
+                                    <label><input type="radio" name="rli" value="1">&nbsp;&nbsp;是</label>
+                                    <label style="margin-left: 20%"><input type="radio" name="rli" value="0">&nbsp;&nbsp;否</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle">添加设备权限</td>
+                                <td>
+                                    <label><input type="radio" name="aeq" value="1">&nbsp;&nbsp;是</label>
+                                    <label style="margin-left: 20%"><input type="radio" name="aeq" value="0">&nbsp;&nbsp;否</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle">修改设备权限</td>
+                                <td>
+                                    <label><input type="radio" name="ueq" value="1">&nbsp;&nbsp;是</label>
+                                    <label style="margin-left: 20%"><input type="radio" name="ueq" value="0">&nbsp;&nbsp;否</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle">删除设备权限</td>
+                                <td>
+                                    <label><input type="radio" name="deq" value="1">&nbsp;&nbsp;是</label>
+                                    <label style="margin-left: 20%"><input type="radio" name="deq" value="0">&nbsp;&nbsp;否</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle">添加子账号权限</td>
+                                <td>
+                                    <label><input type="radio" name="asub_account" value="1">&nbsp;&nbsp;是</label>
+                                    <label style="margin-left: 20%"><input type="radio" name="asub_account" value="0">&nbsp;&nbsp;否</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle">修改子账号权限</td>
+                                <td>
+                                    <label><input type="radio" name="usub_account" value="1">&nbsp;&nbsp;是</label>
+                                    <label style="margin-left: 20%"><input type="radio" name="usub_account" value="0">&nbsp;&nbsp;否</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle">删除子账号权限</td>
+                                <td>
+                                    <label><input type="radio" name="dsub_account" value="1">&nbsp;&nbsp;是</label>
+                                    <label style="margin-left: 20%"><input type="radio" name="dsub_account" value="0">&nbsp;&nbsp;否</label>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="btn-group btn-group-lg" style="margin-left: 40%" role="group" aria-label="...">
+                        <input type="submit" class="btn btn-default" name="submit" style="height: 40px;width: 250%;background: #ff9933;margin-top:60%;margin-bottom:60%;padding-bottom:50%" value="添加">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--引入base-->
+<div id="newbase"></div>
+<!--导入布局js-->
+<script type="text/javascript" src="static/assets/js/include.js"></script>
+
+
+</body>
+
+</html>

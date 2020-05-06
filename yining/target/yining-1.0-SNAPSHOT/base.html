@@ -1,0 +1,225 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>base</title>
+    <meta name="description" content="Ela Admin - HTML5 Admin Template">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+    <link rel="stylesheet" href="static/assets/css/normalize.css">
+    <link rel="stylesheet" href="static/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="static/assets/css/themify-icons.css">
+    <link rel="stylesheet" href="static/assets/css/pe-icon-7-filled.css">
+    <link rel="stylesheet" href="static/assets/css/flag-icon.min.css">
+    <link rel="stylesheet" href="static/assets/css/cs-skin-elastic.css">
+    <link rel="stylesheet" href="static/assets/css/lib/datatable/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="static/assets/css/style.css">
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/html5shiv/3.7.3/html5shiv.min.js"></script> -->
+
+    <style>
+        .amap-icon img,
+        .amap-marker-content img{
+            width: 45px;
+            height: 45px;
+        }
+        /*label的样式*/
+        .amap-marker-label{
+            position: absolute;
+            z-index: 2;
+            border: 1px solid #ccc;
+            background-color: white;
+            　white-space: nowrap;
+            　cursor: default;
+            　padding: 3px;
+            　font-size: 12px;
+            　line-height: 14px;
+        }
+        /*字的颜色*/
+        .navbar .navbar-nav li > a {
+            width: 100%;
+            max-width: 100%;
+            font-size: 14px;
+            color: #707070;
+        }
+
+        /* 以下是设备监控、电气监控、数据统计、报警记录、设备管理前页面的css */
+        /* 自己创建一个css然后放进去，我怕打乱你文件顺序就全放在这了 */
+        /* 设备监控 */
+        .amap-icon img,
+        .amap-marker-content img{
+            width: 45px;
+            height: 45px;
+        }
+        /*label的样式*/
+        .amap-marker-label{
+            position: absolute;
+            z-index: 2;
+            border: 1px solid #ccc;
+            background-color: white;
+            　white-space: nowrap;
+            　cursor: default;
+            　padding: 3px;
+            　font-size: 12px;
+            　line-height: 14px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+<!-- Left Panel -->
+
+<aside id="left-panel" class="left-panel">
+    <nav class="navbar navbar-expand-sm navbar-default">
+
+        <div id="main-menu" class="main-menu collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="menu-title">当前查看</li><!-- /.menu-title -->
+                <li>
+                    <a href="#"><i class="menu-icon fa fa-laptop"></i>base</a>
+                </li>
+                <li class="menu-title">监控管理</li><!-- /.menu-title -->
+                <li>
+                    <a href="monitor.html"><i class="menu-icon fa  fa-play-circle"></i>设备监控</a>
+                </li>
+                <li>
+                    <a href="electrical.html"><i class="menu-icon fa  fa-play-circle"></i>电气监控</a>
+                </li>
+                <li>
+                    <a href="data.html"><i class="menu-icon fa fa-bar-chart-o"></i>数据统计</a>
+                </li>
+                <li>
+                    <a href="alarm_record.html"><i class="menu-icon fa fa-exclamation-circle"></i>报警记录</a>
+                </li>
+
+                <li class="menu-title">设备管理</li><!-- /.menu-title -->
+                <li>
+                    <a href="equipments.html"> <i class="menu-icon fa fa-cogs"></i>设备管理</a>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </nav>
+</aside><!-- /#left-panel -->
+
+<!-- Left Panel -->
+
+<!-- Right Panel -->
+
+<div id="right-panel" class="right-panel" >
+
+    <!-- Header-->
+    <header id="header" class="header">
+        <div class="top-left">
+            <div class="navbar-header">
+                <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
+                <a class="navbar-brand" href="base.html"><img style="height: 43px;margin-left: 25%" src="static/img/yunan_logo_2.png" alt="Logo"></a>
+            </div>
+        </div>
+        <div class="top-right">
+            <div class="header-menu">
+                <div class="header-left">
+
+                    <div class="dropdown for-notification">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="notification"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-bell"></i>
+                            <span class="count bg-danger">{{ base.tipCount }}</span>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="notification">
+                            <p class="red">{{ base.tipTitle }}</p>
+                            <a class="dropdown-item media" href="#">
+                                <i class="fa fa-check"></i>
+                                {% for tip in base.tips %}
+                                <p>{{ tip }}</p>
+                                {% endfor %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user-area dropdown float-right">
+                    <a href="#" class="dropdown-toggle active" data-toggle="dropdown" aria-haspopup="true"
+                       aria-expanded="false">
+                        <!-- <img class="user-avatar rounded-circle" src="{{ base.avatarImgUrl }}" alt="Avatar"> -->
+                        <p class="">{{ base.name }}</p>
+                    </a>
+
+                    <div class="user-menu dropdown-menu">
+                        <li>
+                            <a class="nav-link" href="editUser.html"><i class="fa fa-user"></i>账号信息</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="role.html"><i class="fa fa-user"></i>角色管理</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="#"><i class="fa fa-cog"></i>设置</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="javascript:location.href='user/exit';"><i class="fa fa-power-off"></i>退出</a>
+
+                        </li>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header><!-- /header -->
+    <!-- Header-->
+
+    <div class="clearfix"></div>
+
+    <footer class="site-footer" >
+        <div class="footer-inner bg-white">
+            <div class="row">
+                <div class="col-sm-6" >
+                    Copyright &copy; 2020 易宁安全监测平台
+                </div>
+                <div class="col-sm-6 text-right"> 高能团队
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</div><!-- /#right-panel -->
+
+<!-- Right Panel -->
+
+<!-- Scripts -->
+<script src="static/assets/js/vendor/jquery-2.1.4.min.js"></script>
+<script src="static/assets/js/popper.min.js"></script>
+<script src="static/assets/js/bootstrap.min.js"></script>
+<script src="static/assets/js/jquery.matchHeight.min.js"></script>
+<script src="static/assets/js/main.js"></script>
+
+
+<script src="static/assets/js/lib/data-table/datatables.min.js"></script>
+<script src="static/assets/js/lib/data-table/dataTables.bootstrap.min.js"></script>
+<script src="static/assets/js/lib/data-table/dataTables.buttons.min.js"></script>
+<script src="static/assets/js/lib/data-table/buttons.bootstrap.min.js"></script>
+<script src="static/assets/js/lib/data-table/jszip.min.js"></script>
+<script src="static/assets/js/lib/data-table/vfs_fonts.js"></script>
+<script src="static/assets/js/lib/data-table/buttons.html5.min.js"></script>
+<script src="static/assets/js/lib/data-table/buttons.print.min.js"></script>
+<script src="static/assets/js/lib/data-table/buttons.colVis.min.js"></script>
+<script src="static/assets/js/init/datatables-init.js"></script>
+
+
+
+</body>
+
+</html>

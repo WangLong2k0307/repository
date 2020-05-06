@@ -1,0 +1,226 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>角色管理</title>
+    <meta name="description" content="Ela Admin - HTML5 Admin Template">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="static/assets/css/normalize.css">
+    <link rel="stylesheet" href="static/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/assets/css/bootstrapp.css">
+    <link rel="stylesheet" href="static/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="static/assets/css/themify-icons.css">
+    <link rel="stylesheet" href="static/assets/css/pe-icon-7-filled.css">
+    <link rel="stylesheet" href="static/assets/css/flag-icon.min.css">
+    <link rel="stylesheet" href="static/assets/css/cs-skin-elastic.css">
+<!--    <link rel="stylesheet" href="static/assets/css/lib/datatable/dataTables.bootstrap.min.css">-->
+    <link rel="stylesheet" href="static/assets/css/style.css">
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/html5shiv/3.7.3/html5shiv.min.js"></script> -->
+
+    <script>
+        function add(){
+            location.href="addRoles.html";
+        }
+        $(function () {
+            var rname="";
+            load(null,rname);
+        })
+        function load(currentPage,rname) {
+            //发送ajax请求findRoleByPageServlet，传递参数
+            $.get("findRoleByPageServlet",{currentPage:currentPage,rname:rname},function (pb) {
+                //解析pageBean数据，展示到页面上
+
+                //展示分页页码
+                var lis = "";
+                //计算上一页
+                var frontNum=pb.currentPage-1;
+                if(frontNum<=0){
+                    frontNum=1;
+                }
+                var frontPage='<li onclick="javascript:load('+frontNum+',\''+rname+'\')" class=""><a href="javascript:void(0)">&laquo;</a></li>';
+                lis+=frontPage;
+                for (var i=1;i<=pb.totalPage;i++){
+                    var li;
+                    //判断当前页码是否等于i
+                    if(pb.currentPage==i){
+                        li='<li class="active" style="background-color: #ff9933 !important;" onclick="javascript:load('+i+',\''+rname+'\')"><a href="javascript:void(0)">'+i+'</a></li>';
+                    }else{
+                        //创建页码列表
+                        li='<li onclick="javascript:load('+i+',\''+rname+'\')"><a href="javascript:void(0)">'+i+'</a></li>';
+                    }
+
+                    //拼接字符串
+                    lis+=li;
+                }
+
+                //计算下一页
+                var nextNum=pb.currentPage+1;
+                if(nextNum>=pb.totalPage){
+                    nextNum=pb.totalPage;
+                }
+                var nextPage='<li class="" onclick="javascript:load('+nextNum+',\''+rname+'\')"><a href="javascript:;">&raquo;</a></li>';
+                lis+=nextPage;
+                //将内容设置到ul中
+                $("#pageNum").html(lis);
+
+                //2.列表数据展示
+                var role_lis="<tr>\n" +
+                    "                    <th>#</th>\n" +
+                    "                    <th>角色名称</th>\n" +
+                    "                    <th>备注</th>\n" +
+                    "                    <th>创建时间</th>\n" +
+                    "                    <th>操作</th>\n" +
+                    "                </tr>";
+
+                for (var i=0;i<pb.list.length;i++){
+                    //获取角色列表
+                    var role=pb.list[i];
+
+                    var tr='<tr>\n' +
+                        '                    <td>'+role.rid+'</td>\n' +
+                        '                    <td>'+role.rname+'</td>\n' +
+                        '                    <td>'+role.remark+'</td>\n' +
+                        '                    <td>'+format(role.date,"yyyy-MM-dd hh:mm:ss")+'</td>\n' +
+                        '                    <td><a href="editRoles.html?rid='+role.rid+'">修改</a></td>\n' +
+                        '                </tr>'
+                    role_lis+=tr;
+                }
+                $("#roles").html(role_lis);
+            });
+        }
+
+        //时间格式自定义
+        function format(datetime,fmt) {
+            if (parseInt(datetime)==datetime) {
+                if (datetime.length==10) {
+                    datetime=parseInt(datetime)*1000;
+                } else if(datetime.length==13) {
+                    datetime=parseInt(datetime);
+                }
+            }
+            datetime=new Date(datetime);
+            var o = {
+                "M+" : datetime.getMonth()+1,                 //月份
+                "d+" : datetime.getDate(),                    //日
+                "h+" : datetime.getHours(),                   //小时
+                "m+" : datetime.getMinutes(),                 //分
+                "s+" : datetime.getSeconds(),                 //秒
+                "q+" : Math.floor((datetime.getMonth()+3)/3), //季度
+                "S"  : datetime.getMilliseconds()             //毫秒
+            };
+            if(/(y+)/.test(fmt))
+                fmt=fmt.replace(RegExp.$1, (datetime.getFullYear()+"").substr(4 - RegExp.$1.length));
+            for(var k in o)
+                if(new RegExp("("+ k +")").test(fmt))
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+            return fmt;
+        }
+    </script>
+
+    <style>
+        .amap-icon img,
+        .amap-marker-content img{
+            width: 45px;
+            height: 45px;
+        }
+        /*label的样式*/
+        .amap-marker-label{
+            position: absolute;
+            z-index: 2;
+            border: 1px solid #ccc;
+            background-color: white;
+            　white-space: nowrap;
+            　cursor: default;
+            　padding: 3px;
+            　font-size: 12px;
+            　line-height: 14px;
+        }
+        /*字的颜色*/
+        .navbar .navbar-nav li > a {
+            width: 100%;
+            max-width: 100%;
+            font-size: 14px;
+            color: #707070;
+        }
+
+        /* 以下是设备监控、电气监控、数据统计、报警记录、设备管理前页面的css */
+        /* 自己创建一个css然后放进去，我怕打乱你文件顺序就全放在这了 */
+        /* 设备监控 */
+        .amap-icon img,
+        .amap-marker-content img{
+            width: 45px;
+            height: 45px;
+        }
+        /*label的样式*/
+        .amap-marker-label{
+            position: absolute;
+            z-index: 2;
+            border: 1px solid #ccc;
+            background-color: white;
+            　white-space: nowrap;
+            　cursor: default;
+            　padding: 3px;
+            　font-size: 12px;
+            　line-height: 14px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="right-panel">
+    <div class="content">
+        <div class="content">
+            <div class="animated fadeIn">
+                <div class="row">
+
+                    <div class="col-md-12">
+
+                        <div class="card panel panel-primary" style="overflow: hidden;border:#ff9933;">
+                            <div class="panel-heading" style="background: #ff9933;border:#ff9933 ">
+                                <span>角色管理</span>
+                                <button onclick="add()" style="background: black;opacity:0.8;color: white;border: black;width:10%;padding: 0.5%;margin-left: 80%">添加角色</button>
+                            </div>
+                            <br><br>
+                            <div class="panel panel-default" style="width: 90%;margin: 0 auto">
+                                <!-- Table -->
+                                <table class="table" style="" id="roles">
+
+                                </table>
+                            </div>
+                            <nav aria-label="..." style="float: right;margin-right: 5%">
+                                <ul class="pagination" id="pageNum">
+
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- .animated -->
+        </div>
+    </div>
+</div>
+
+<!--引入base-->
+<div id="newbase"></div>
+<!--导入布局js-->
+<script type="text/javascript" src="static/assets/js/include.js"></script>
+
+</body>
+
+</html>

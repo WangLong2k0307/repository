@@ -1,0 +1,298 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>设备日志</title>
+    <meta name="description" content="Ela Admin - HTML5 Admin Template">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="static/assets/js/jquery-3.3.1.js"></script>
+    <script src="static/assets/js/getParameter.js"></script>
+
+
+    <link rel="stylesheet" href="static/assets/css/normalize.css">
+    <link rel="stylesheet" href="static/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="static/assets/css/themify-icons.css">
+    <link rel="stylesheet" href="static/assets/css/pe-icon-7-filled.css">
+    <link rel="stylesheet" href="static/assets/css/flag-icon.min.css">
+    <link rel="stylesheet" href="static/assets/css/cs-skin-elastic.css">
+    <link rel="stylesheet" href="static/assets/css/lib/datatable/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="static/assets/css/style.css">
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/html5shiv/3.7.3/html5shiv.min.js"></script> -->
+
+    <style>
+        .amap-icon img,
+        .amap-marker-content img{
+            width: 45px;
+            height: 45px;
+        }
+        /*label的样式*/
+        .amap-marker-label{
+            position: absolute;
+            z-index: 2;
+            border: 1px solid #ccc;
+            background-color: white;
+            　white-space: nowrap;
+            　cursor: default;
+            　padding: 3px;
+            　font-size: 12px;
+            　line-height: 14px;
+        }
+        /*字的颜色*/
+        .navbar .navbar-nav li > a {
+            width: 100%;
+            max-width: 100%;
+            font-size: 14px;
+            color: #707070;
+        }
+
+    </style>
+
+
+
+
+
+
+
+    <script>
+
+        //校验名称
+        function checkName() {
+            //获取用户名值：jquery id选择器
+            var name = $("#name").val();
+            //定义正则
+            var reg_name = /^[\u4e00-\u9fa5_a-zA-Z0-9]+$/;
+            //判断，给出提示信息
+            var flag = reg_name.test(name);
+            if(flag){
+                //用户名合法
+                $("#name").css("border","");
+            }else{
+                //用户名非法,加一个红色边框
+                $("#name").css("border","1px solid red");
+            }
+            return flag;
+        }
+
+        //校验用户名
+        function checkUsername() {
+            //获取用户名值：jquery id选择器
+            var username = $("#username").val();
+            //定义正则
+            var reg_username = /^\w{1,30}$/;
+
+            //判断，给出提示信息
+            var flag = reg_username.test(username);
+            if(flag){
+                //用户名合法
+                $("#username").css("border","");
+            }else{
+                //用户名非法,加一个红色边框
+                $("#username").css("border","1px solid red");
+            }
+            return flag;
+        }
+
+        //校验密码
+        function checkPassword() {
+            //1.获取密码值
+            var password = $("#password").val();
+            //2.定义正则
+            var reg_password = /^\w{1,30}$/;
+
+            //3.判断，给出提示信息
+            var flag = reg_password.test(password);
+            if(flag){
+                //密码合法
+                $("#password").css("border","");
+            }else{
+                //密码非法,加一个红色边框
+                $("#password").css("border","1px solid red");
+            }
+            return flag;
+        }
+
+        //校验联系人
+        function checkcontact() {
+            //获取用户名值：jquery id选择器
+            var contact = $("#contact").val();
+            //定义正则
+            var reg_contact = /^[\u4e00-\u9fa5_a-zA-Z0-9]+$/;
+            //判断，给出提示信息
+            var flag = reg_contact.test(contact);
+            if(flag){
+                //用户名合法
+                $("#contact").css("border","");
+            }else{
+                //用户名非法,加一个红色边框
+                $("#contact").css("border","1px solid red");
+            }
+            return flag;
+        }
+
+        //校验联系人电话
+        function checkcontact_tel(){
+            //获取手机号
+            var contact_tel=$("#contacttel").val();
+            //定义正则
+            var reg_contact_tel=/^\d{11}$/;
+            //判断
+            var flag=reg_contact_tel.test(contact_tel);
+            if(flag){
+                $("#contacttel").css("border","");
+            }else{
+                $("#contacttel").css("border","1px solid red");
+            }
+            return flag;
+        }
+
+        //校验位置
+        function checklocation() {
+            //获取用户名值：jquery id选择器
+            var location = $("#location").val();
+            //定义正则
+            var reg_location = /^[\u4e00-\u9fa5_a-zA-Z0-9]+$/;
+            //判断，给出提示信息
+            var flag = reg_location.test(location);
+            if(flag){
+                //用户名合法
+                $("#location").css("border","");
+            }else{
+                //用户名非法,加一个红色边框
+                $("#location").css("border","1px solid red");
+            }
+            return flag;
+        }
+
+        function load(eq_id) {
+            $.get("equipDetailServlet", {eq_id:eq_id}, function (equipment) {
+                document.getElementById("eq_id").value = eq_id;
+                document.getElementById("eq_name").value = equipment.name;
+            })
+        }
+        $(function () {
+
+            let eq_id = getParameter("eq_id");
+            load(eq_id);
+            //查看权限
+            $.get("user/checkByRid",{},function (role) {
+                if(role.asub_account!='1'){
+                    $("#addUser_html").html("您无权添加子账号！");
+                }
+            });
+
+            //当表单提交时，调用所有的校验方法
+            $("#addUserForm").submit(function(){
+                //1.发送数据到服务器
+                if(checkName()&&checkUsername() && checkPassword() && checkcontact() &&checkcontact_tel()&&checklocation()){
+                    //校验通过,发送ajax请求，提交表单的数据   username=zhangsan&password=123
+                    //serialize():将表单内容转为字符串，如“username=alice&&password=123”
+                    //this为java对象，要先转换为jquery对象
+                    $.post("user/regist",$(this).serialize(),function(data){
+                        //处理服务器响应的数据  data  {flag:true,errorMsg:"注册失败"}
+                        if(data.flag){
+                            //注册成功，跳转成功页面
+                            location.href="editUser.html";
+                        }else{
+                            //注册失败,alert添加提示信息
+                            alert(data.errorMsg);
+                        }
+                    });
+                }
+                //不通过则不让页面跳转
+                return false;
+                //如果这个方法没有返回值，或者返回为true，则表单提交，如果返回为false，则表单不提交
+            });
+
+            //当某一个组件失去焦点时，调用对应的校验方法
+            $("#name").blur(checkName);
+            $("#username").blur(checkUsername);
+            $("#password").blur(checkPassword);
+            $("#contact").blur(checkcontact);
+            $("#contacttel").blur(checkcontact_tel);
+            $("#location").blur(checklocation);
+        });
+    </script>
+</head>
+<body>
+
+<div class="animated fadeIn">
+    <div class="row">
+        <div class="col-md-11">
+            <div id="logEquipment_html" class="card">
+                <div class="card-header">
+                    <strong class="card-title">设备日志</strong>
+                </div>
+                <div class="card-body card-block">
+                    <form method="post" id="addUserForm" enctype="multipart/form-data" class="form-horizontal">
+
+                        <!-- eq_id -->
+                        <div class="row form-group">
+                            <div class="col col-md-3"><label for="eq_id" class=" form-control-label">设备ID</label>
+                            </div>
+                            <div class="col-6 col-md-7">
+                                <input type="text" id="eq_id" name="eq_id" class="form-control" value="1" readonly="readonly">
+                            </div>
+                        </div>
+
+                        <!-- 设备名称 -->
+                        <div class="row form-group">
+                            <div class="col col-md-3"><label for="eq_name" class=" form-control-label">设备名称</label>
+                            </div>
+                            <div class="col-6 col-md-7">
+                                <input type="text" id="eq_name" name="eq_name" class="form-control" value="明向管委会" readonly="readonly">
+                            </div>
+                        </div>
+
+                        <!-- status -->
+                        <div class="row form-group">
+                            <div class="col col-md-3"><label for="status" class=" form-control-label">设备状态</label>
+                            </div>
+                            <div class="col-6 col-md-7">
+                                <select id="status" name="status" class="form-control">
+                                    <option value="正常">正常</option>
+                                    <option value="故障">故障</option>
+                                    <option value="报警">报警</option>
+                                    <option value="维修中">维修中</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- description -->
+                        <div class="row form-group">
+                            <div class="col col-md-3"><label for="description" class=" form-control-label">描述</label>
+                            </div>
+                            <div class="col-6 col-md-7">
+                                <input type="text" id="description" name="description" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class='col-md-6 offset-md-3'>
+                            <br><br>
+                            <button type="submit" id='submit' class="btn btn-primary btn-lg btn-block">添加</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!-- .animated -->
+
+
+
+</body>
+</html>
+
+

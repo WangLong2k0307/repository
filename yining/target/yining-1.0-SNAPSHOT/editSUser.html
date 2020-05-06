@@ -1,0 +1,317 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+<!--<![endif]-->
+
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>子账号管理</title>
+    <meta name="description" content="Ela Admin - HTML5 Admin Template">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="static/assets/js/jquery-3.3.1.js"></script>
+
+
+    <link rel="stylesheet" href="static/assets/css/normalize.css">
+    <link rel="stylesheet" href="static/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="static/assets/css/themify-icons.css">
+    <link rel="stylesheet" href="static/assets/css/pe-icon-7-filled.css">
+    <link rel="stylesheet" href="static/assets/css/flag-icon.min.css">
+    <link rel="stylesheet" href="static/assets/css/cs-skin-elastic.css">
+    <link rel="stylesheet" href="static/assets/css/lib/datatable/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="static/assets/css/style.css">
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/html5shiv/3.7.3/html5shiv.min.js"></script> -->
+
+    <style>
+        .amap-icon img,
+        .amap-marker-content img{
+            width: 45px;
+            height: 45px;
+        }
+        /*label的样式*/
+        .amap-marker-label{
+            position: absolute;
+            z-index: 2;
+            border: 1px solid #ccc;
+            background-color: white;
+            　white-space: nowrap;
+            　cursor: default;
+            　padding: 3px;
+            　font-size: 12px;
+            　line-height: 14px;
+        }
+        /*字的颜色*/
+        .navbar .navbar-nav li > a {
+            width: 100%;
+            max-width: 100%;
+            font-size: 14px;
+            color: #707070;
+        }
+
+    </style>
+
+
+
+    <script>
+
+        var suid;
+
+        $(function () {
+            suid= window.location.href.split("?")[1].split("=")[1];
+            var fusername;
+            var uid;
+
+            //loginuser:现登录用户
+            $.get("user/findOne",{},function (luser) {
+                fusername=luser.username;
+                uid=luser.uid;
+            });
+
+            $.get("user/findByUid",{suid:suid},function (suser) {
+                
+                $('#name-input').val(''+suser.name+'');//填充内容
+                $('#username-input').val(''+suser.username+'');//填充内容
+                $('#password-input').val(''+suser.password+'');//填充内容
+                $('#fusername-input').val(''+suser.fusername+'');//填充内容
+                $('#location-input').val(''+suser.location+'');//填充内容
+                $('#contact-input').val(''+suser.contact+'');//填充内容
+                $('#contacttel-input').val(''+suser.contacttel+'');//填充内容
+                $('#description-input').val(''+suser.description+'');//填充内容
+
+                var arr=new Array();
+                arr=suser.date.split('.');
+                suser.date=arr[0];
+
+                $('#date-input').val(''+suser.date+'');//填充内容
+                
+                if(fusername!=suser.fusername&&uid!=suser.uid){
+                    $("#editSUser_html").html("您无权修改子账号！");
+                }
+            });
+        });
+
+        //查看权限
+        $.get("user/checkByRid",{},function (role) {
+            if(role.usub_account=='0'){
+                $("#editSUser_html").html("您无权修改子账号！")
+            }
+        });
+
+        //点击修改
+        function clickModify($this) {
+            var sureid = $($this).attr('sureid');
+            var cancelid = $($this).attr('cancelid');
+            var inputid = $($this).attr('inputid');
+            $($this).css('display','none');
+            $('#'+sureid+'').css('display','block');
+            $('#'+cancelid+'').css('display','block');
+            $('#'+inputid+'').removeAttr("readonly");
+
+        }
+
+        //点击确定
+        function clickSure($this) {
+            var modifyid = $($this).attr('modifyid');
+            var cancelid = $($this).attr('cancelid');
+            var inputid = $($this).attr('inputid');
+            var name =$('#'+inputid+'').prop('name');
+            var value=$('#'+inputid+'').val();
+
+            var suid= window.location.href.split("?")[1].split("=")[1];
+
+            $.get("user/updateByName",{suid:suid,name:name,value:value},function () {
+
+            });
+
+            $($this).css('display','none');
+            $('#'+modifyid+'').css('display','block');
+            $('#'+cancelid+'').css('display','none');
+            $('#'+inputid+'').attr('readonly','readonly');
+
+        }
+
+        //点击取消
+        function clickCancel($this) {
+            var sureid = $($this).attr('sureid');
+            var modifyid = $($this).attr('modifyid');
+            var inputid = $($this).attr('inputid');
+            var name =$('#'+inputid+'').prop('name');
+            var value;
+
+            $.get("user/findByUid",{suid:suid},function (suser) {
+                if(name=="name"){
+                    value=suser.name;
+                }else if(name=="username"){
+                    value=suser.username;
+                }else if(name=="password"){
+                    value=suser.password;
+                }else if(name=="location"){
+                    value=suser.location;
+                }else if(name=="contact"){
+                    value=suser.contact;
+                }else if(name=="contacttel"){
+                    value=suser.contacttel;
+                }else if(name=="description"){
+                    value=suser.description;
+                }
+
+                $("#"+name+"-p").html("<input type=\"text\" id=\""+name+"-input\" name=\""+name+"\" readonly=\"readonly\" value=\""+value+"\" class=\"form-control\">");
+            });
+
+            $($this).css('display','none');
+            $('#'+sureid+'').css('display','none');
+            $('#'+modifyid+'').css('display','block');
+
+        }
+
+    </script>
+</head>
+<body>
+
+
+<div class="right-panel">
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="editSUser_html" class="card">
+                    <div class="card-header" style="background-color: #ff9933;">
+                        <strong class="card-title">修改用户信息</strong>
+                    </div>
+                    <div class="card-body card-block">
+                        <form action="#" method="post" enctype="multipart/form-data" class="form-horizontal">
+
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="name-input" class=" form-control-label">名称</label></div>
+                                <div class="col-6 col-md-7" id="name-p">
+                                    <input type="text" id="name-input" name="name" readonly="readonly" value="" class="form-control">
+                                </div>
+                                <div class='col-4 col-md-2'>
+                                    <button id='name-modify' type="button" onclick='clickModify(this)' class="btn btn-link" style='display: block' sureid="name-sure" cancelid="name-cancel" inputid="name-input" >修改</button>
+                                    <button id='name-sure' style='display: none' onclick='clickSure(this)' type="button" class="btn btn-outline-primary" modifyid="name-modify" cancelid="name-cancel" inputid="name-input">确定</button>
+                                    <button id='name-cancel' style='display: none' onclick='clickCancel(this)' type="button" class="btn btn-outline-danger" sureid="name-sure" modifyid="name-modify" inputid="name-input">取消</button>
+                                </div>
+                            </div>
+
+                            <!-- username -->
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="username-input" class=" form-control-label">用户名</label></div>
+                                <div id='username-p' class="col-6 col-md-7">
+                                    <input type="text" id="username-input" name="username" readonly="readonly" value="" class="form-control">
+
+                                </div>
+                                <div class='col-4 col-md-2'>
+                                    <button id='username-modify' type="button" onclick='clickModify(this)' class="btn btn-link" style='display: block' sureid="username-sure" cancelid="username-cancel" inputid="username-input">修改</button>
+                                    <button id='username-sure' style='display: none' onclick='clickSure(this)' type="button" class="btn btn-outline-primary" modifyid="username-modify" cancelid="username-cancel" inputid="username-input">确定</button>
+                                    <button id='username-cancel' style='display: none' onclick='clickCancel(this)' type="button" class="btn btn-outline-danger" sureid="username-sure" modifyid="username-modify" inputid="username-input">取消</button>
+                                </div>
+                            </div>
+
+                            <!-- password -->
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="password-input" class=" form-control-label">密码</label></div>
+                                <div id='password-p' class="col-6 col-md-7">
+                                    <input type="text" id="password-input" name="password"  readonly="readonly" value="" class="form-control">
+
+                                </div>
+                                <div class='col-4 col-md-2'>
+                                    <button id='password-modify' type="button" onclick='clickModify(this)' class="btn btn-link" style='display: block' sureid="password-sure" cancelid="password-cancel" inputid="password-input">修改</button>
+                                    <button id='password-sure' style='display: none' onclick='clickSure(this)' type="button" class="btn btn-outline-primary" modifyid="password-modify" cancelid="password-cancel" inputid="password-input">确定</button>
+                                    <button id='password-cancel' style='display: none' onclick='clickCancel(this)' type="button" class="btn btn-outline-danger" sureid="password-sure" modifyid="password-modify" inputid="password-input">取消</button>
+                                </div>
+                            </div>
+
+
+                            <!-- parent.name -->
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label class=" form-control-label">父账号</label></div>
+                                <div class="col-12 col-md-9">
+                                    <input type="text" id="fusername-input" name="fusername" readonly="readonly" value="" class="form-control">
+                                </div>
+                            </div>
+
+                            <!-- address -->
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="location-input" class=" form-control-label">位置</label></div>
+                                <div id='location-p' class="col-6 col-md-7">
+                                    <input type="text" id="location-input" name="location" readonly="readonly" value="" class="form-control">
+                                </div>
+                                <div class='col-4 col-md-2'>
+                                    <button id='location-modify' onclick='clickModify(this)' type="button" class="btn btn-link" style='display: block' sureid="location-sure" cancelid="location-cancel"  inputid="location-input">修改</button>
+                                    <button id='location-sure' onclick='clickSure(this)' style='display: none' type="button" class="btn btn-outline-primary" modifyid="location-modify" cancelid="location-cancel" inputid="location-input">确定</button>
+                                    <button id='location-cancel' onclick='clickCancel(this)' style='display: none' type="button" class="btn btn-outline-danger" sureid="location-sure" modifyid="location-modify" inputid="location-input">取消</button>
+                                </div>
+                            </div>
+
+                            <!-- 联系人 -->
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="contact-input" class=" form-control-label">联系人</label></div>
+                                <div class="col-6 col-md-7" id='contact-p'>
+                                    <input type="text" id="contact-input" name="contact" readonly="readonly" value="" class="form-control">
+
+                                </div>
+                                <div class='col-4 col-md-2'>
+                                    <button id='contact-modify' onclick='clickModify(this)' type="button" class="btn btn-link" style='display: block' sureid="contact-sure" cancelid="contact-cancel" inputid="contact-input">修改</button>
+                                    <button id='contact-sure' onclick='clickSure(this)' style='display: none' type="button" class="btn btn-outline-primary" modifyid="contact-modify" cancelid="contact-cancel" inputid="contact-input">确定</button>
+                                    <button id='contact-cancel' onclick='clickCancel(this)' style='display: none' type="button" class="btn btn-outline-danger" sureid="contact-sure" modifyid="contact-modify" inputid="contact-input">取消</button>
+                                </div>
+                            </div>
+
+                            <!-- contact_tel -->
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="contacttel-input" class=" form-control-label">联系人电话</label></div>
+                                <div id='contacttel-p' class="col-6 col-md-7">
+                                    <input type="text" id="contacttel-input" name="contacttel" readonly="readonly" value="" class="form-control">
+
+                                </div>
+                                <div class='col-4 col-md-2'>
+                                    <button id='contacttel-modify' onclick='clickModify(this)' type="button" class="btn btn-link" style='display: block' sureid="contacttel-sure" cancelid="contacttel-cancel" inputid="contacttel-input">修改</button>
+                                    <button id='contacttel-sure' onclick='clickSure(this)' style='display: none' type="button" class="btn btn-outline-primary" modifyid="contacttel-modify" cancelid="contacttel-cancel" inputid="contacttel-input">确定</button>
+                                    <button id='contacttel-cancel' onclick='clickCancel(this)' style='display: none' type="button" class="btn btn-outline-danger" sureid="contacttel-sure" modifyid="contacttel-modify" inputid="contacttel-input">取消</button>
+                                </div>
+                            </div>
+
+                            <!-- describe -->
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="description-input" class=" form-control-label">描述</label></div>
+                                <div id='description-p' class="col-6 col-md-7">
+                                    <input type="text" id="description-input" name="description" readonly="readonly" value="" class="form-control">
+
+                                </div>
+                                <div class='col-4 col-md-2'>
+                                    <button id='description-modify' type="button" onclick='clickModify(this)' style='display: block' sureid="description-sure" cancelid="description-cancel" inputid="description-input" class="btn btn-link">修改</button>
+                                    <button id='description-sure' style='display: none' onclick='clickSure(this)' type="button" modifyid="description-modify" cancelid="description-cancel" inputid="description-input" class="btn btn-outline-primary">确定</button>
+                                    <button id='description-cancel' style='display: none' onclick='clickCancel(this)' type="button" sureid="description-sure" modifyid="description-modify" inputid="description-input" class="btn btn-outline-danger">取消</button>
+                                </div>
+                            </div>
+
+                            <!--create_time-->
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label class=" form-control-label">创建时间</label></div>
+                                <div class="col-12 col-md-9">
+                                    <input type="text" id="date-input" name="description" readonly="readonly" value="" class="form-control">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--引入base-->
+<div id="newbase"></div>
+<!--导入布局js-->
+<script type="text/javascript" src="static/assets/js/include.js"></script>
+
+</body>
+</html>

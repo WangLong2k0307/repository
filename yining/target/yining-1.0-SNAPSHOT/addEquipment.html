@@ -1,0 +1,393 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>添加设备</title>
+    <meta name="description" content="Ela Admin - HTML5 Admin Template">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="static/assets/css/normalize.css">
+    <link rel="stylesheet" href="static/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="static/assets/css/themify-icons.css">
+    <link rel="stylesheet" href="static/assets/css/pe-icon-7-filled.css">
+    <link rel="stylesheet" href="static/assets/css/flag-icon.min.css">
+    <link rel="stylesheet" href="static/assets/css/cs-skin-elastic.css">
+    <link rel="stylesheet" href="static/assets/css/lib/datatable/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="static/assets/css/style.css">
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/html5shiv/3.7.3/html5shiv.min.js"></script> -->
+
+    <style>
+        .amap-icon img,
+        .amap-marker-content img{
+            width: 45px;
+            height: 45px;
+        }
+        /*label的样式*/
+        .amap-marker-label{
+            position: absolute;
+            z-index: 2;
+            border: 1px solid #ccc;
+            background-color: white;
+            　white-space: nowrap;
+            　cursor: default;
+            　padding: 3px;
+            　font-size: 12px;
+            　line-height: 14px;
+        }
+        /*字的颜色*/
+        .navbar .navbar-nav li > a {
+            width: 100%;
+            max-width: 100%;
+            font-size: 14px;
+            color: #707070;
+        }
+
+        /* 以下是设备监控、电气监控、数据统计、报警记录、设备管理前页面的css */
+        /* 自己创建一个css然后放进去，我怕打乱你文件顺序就全放在这了 */
+        /* 设备监控 */
+        .amap-icon img,
+        .amap-marker-content img{
+            width: 45px;
+            height: 45px;
+        }
+        /*label的样式*/
+        .amap-marker-label{
+            position: absolute;
+            z-index: 2;
+            border: 1px solid #ccc;
+            background-color: white;
+            　white-space: nowrap;
+            　cursor: default;
+            　padding: 3px;
+            　font-size: 12px;
+            　line-height: 14px;
+        }
+
+    </style>
+    <!-- Scripts -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+    <script src="static/assets/js/vendor/jquery-2.1.4.min.js"></script>
+    <script src="static/assets/js/popper.min.js"></script>
+
+    <script src="static/assets/js/jquery.matchHeight.min.js"></script>
+    <script src="static/assets/js/main.js"></script>
+    <script src="static/assets/js/jquery-2.1.0.min.js"></script>
+    <script src="static/assets/js/getParameter.js"></script>
+    <script src="static/assets/js/lib/data-table/datatables.min.js"></script>
+    <script src="static/assets/js/lib/data-table/dataTables.bootstrap.min.js"></script>
+    <script src="static/assets/js/lib/data-table/dataTables.buttons.min.js"></script>
+    <script src="static/assets/js/lib/data-table/buttons.bootstrap.min.js"></script>
+    <script src="static/assets/js/lib/data-table/jszip.min.js"></script>
+    <script src="static/assets/js/lib/data-table/vfs_fonts.js"></script>
+    <script src="static/assets/js/lib/data-table/buttons.html5.min.js"></script>
+    <script src="static/assets/js/lib/data-table/buttons.print.min.js"></script>
+    <script src="static/assets/js/lib/data-table/buttons.colVis.min.js"></script>
+    <script src="static/assets/js/init/datatables-init.js"></script>
+    <script src="https://webapi.amap.com/maps?v=1.4.15&key=a3cd14fb950f2b42a13126628d911b30"></script>
+    <script >
+
+        //校验id
+        function checkID(){
+            if (document.getElementById("eq_id").value != ""){
+                $("#eq_id").css("border", "");
+                return true;
+            }else {
+                $("#eq_id").css("border", "1px solid red");
+                return false;
+            }
+        }
+
+        //校验名称
+        function checkName(){
+
+
+            if (document.getElementById("name").value != ""){
+                $("#name").css("border", "");
+                return true;
+            }else {
+                $("#name").css("border", "1px solid red");
+                return false;
+            }
+
+        }
+        function checkUse_department() {
+            if (document.getElementById("use_department").value != ""){
+                $("#use_department").css("border", "");
+                return true;
+            }else {
+                $("#use_department").css("border", "1px solid red");
+                return false;
+            }
+
+        }
+        function checkAddress() {
+            if (document.getElementById("address").value != ""){
+                $("#address").css("border", "");
+                return true;
+            }else {
+                $("#address").css("border", "1px solid red");
+                return false;
+            }
+
+        }
+        function checkProducer() {
+            if (document.getElementById("producer").value != ""){
+                $("#producer").css("border", "");
+                return true;
+            }else {
+                $("#producer").css("border", "1px solid red");
+                return false;
+            }
+
+        }
+        function checkType() {
+            if (document.getElementById("type").value != ""){
+                $("#type").css("border", "");
+                return true;
+            }else {
+                $("#type").css("border", "1px solid red");
+                return false;
+            }
+
+        }
+        function checkSim_id() {
+            if (document.getElementById("sim_id").value != ""){
+                $("#sim_id").css("border", "");
+                return true;
+            }else {
+                $("#sim_id").css("border", "1px solid red");
+                return false;
+            }
+
+        }
+        function checkLat() {
+            if (document.getElementById("lat").value != ""){
+                $("#lat").css("border", "");
+                return true;
+            }else {
+                $("#lat").css("border", "1px solid red");
+                return false;
+            }
+
+        }
+        //当表单提交时，调用所有的校验方法
+        $(function () {
+
+            $("#addForm").submit(function () {
+                //1、发送数据到服务器
+                if (checkID() && checkName() && checkUse_department() && checkAddress() && checkProducer() && checkType() && checkSim_id() && checkLat() ){
+                    //校验通过，发送ajax请求，提交表单的数据
+                    $.post("equipAddServlet", $(this).serialize(), function (data) {
+                        if (data.flag){
+                            location.href = "equipments.html";
+                        }else {
+                            //添加失败,给error_msg提示信息
+                            alert("添加失败");
+                        }
+                    });
+                }
+
+
+                return false;
+                //如果这个方法没有返回值，或者返回值为true，则表单提交，如果返回为false，则表单不提交
+            });
+
+            //当某一个组件失去焦点时，调用对应的校验方法
+            //blur括号内应该是函数名，不能有括号
+            $("#eq_id").blur(checkID);
+            $("#name").blur(checkName);
+            $("#use_department").blur(checkUse_department);
+            $("#address").blur(checkAddress);
+            $("#producer").blur(checkProducer);
+            $("#type").blur(checkType);
+            $("#sim_id").blur(checkSim_id);
+            $("#lat").blur(checkLat);
+
+        });
+
+
+    </script>
+</head>
+
+<body>
+<div class="right-panel">
+<div class="animated fadeIn">
+    <div class="row">
+
+        <div class="col-md-11">
+            <div class="card">
+                <div class="card-header">
+                    <strong class="card-title">添加设备</strong>
+                </div>
+                <div class="card-body card-block">
+                    <form id="addForm" method="post" enctype="multipart/form-data" class="form-horizontal">
+
+                        <div class="row form-group">
+                            <div class="col col-md-3"><label for="eq_id" class=" form-control-label">ID</label>
+                            </div>
+                            <div class="col-6 col-md-7">
+                                <input type="text" id="eq_id" name="eq_id" class="form-control">
+                            </div>
+                        </div>
+                        <!-- name -->
+                        <div class="row form-group">
+                            <div class="col col-md-3"><label for="name" class=" form-control-label">名称</label>
+                            </div>
+                            <div class="col-6 col-md-7">
+                                <input type="text" id="name" name="name" class="form-control">
+                            </div>
+                        </div>
+
+                        <!-- class_ -->
+                        <div class="row form-group">
+                            <div class="col col-md-3"><label for="equipment_class" class=" form-control-label">类型</label>
+                            </div>
+                            <div class="col-6 col-md-7">
+                                <select id="equipment_class" name="equipment_class" class="form-control">
+                                    <option value="消防">消防</option>
+                                    <option value="电气">电气</option>
+                                    <option value="反控">反控</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- use_department -->
+                        <div class="row form-group">
+                            <div class="col col-md-3"><label for="use_department"
+                                                             class=" form-control-label">使用单位</label></div>
+                            <div class="col-6 col-md-7">
+                                <input type="text" id="use_department" name="use_department" class="form-control">
+                            </div>
+                        </div>
+
+                        <!-- 位置 -->
+                        <div class="row form-group">
+                            <div class="col col-md-3"><label for="address" class=" form-control-label">位置</label>
+                            </div>
+                            <div class="col-6 col-md-7">
+                                <input type="text" id="address" name="address" class="form-control">
+                            </div>
+                        </div>
+
+                        <!-- 生产商 -->
+                        <div class="row form-group">
+                            <div class="col col-md-3"><label for="producer"
+                                                             class=" form-control-label">生产商</label></div>
+                            <div class="col-6 col-md-7">
+                                <input type="text" id="producer" name="producer" class="form-control">
+                            </div>
+                        </div>
+
+                        <!-- model -->
+                        <div class="row form-group">
+                            <div class="col col-md-3"><label for="type" class=" form-control-label">型号</label>
+                            </div>
+                            <div class="col-6 col-md-7">
+                                <input type="text" id="type" name="type" class="form-control">
+                            </div>
+                        </div>
+
+                        <!-- SIM_id -->
+                        <div class="row form-group">
+                            <div class="col col-md-3"><label for="sim_id" class=" form-control-label">SIM卡号</label>
+                            </div>
+                            <div class="col-6 col-md-7">
+                                <input type="text" id="sim_id" name="sim_id" class="form-control">
+                            </div>
+                        </div>
+
+                        <!-- remarks -->
+                        <div class="row form-group">
+                            <div class="col col-md-3"><label for="note" class=" form-control-label">备注</label>
+                            </div>
+                            <div class="col-6 col-md-7">
+                                <input type="text" id="note" name="note" class="form-control">
+                            </div>
+                        </div>
+                        <tr>
+
+                            <td class="td_right">
+                                <input type="hidden" id="longitude" name="longitude" >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td_right">
+                                <input type="hidden" id="latitude" name="latitude" >
+                            </td>
+                        </tr>
+                        <tr>
+                            <!-- gaode_location -->
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="lat" class=" form-control-label">经纬度</label>
+                                </div>
+                                <div class="col-6 col-md-7">
+                                    <input type="text" id="lat" disabled="true" name="lat" class="form-control">
+                                    <div id='map' style="height: 300px;"></div>
+                                </div>
+                            </div>
+
+
+                            <div class='col-md-6 offset-md-3'>
+                                <br><br>
+                                <input type="submit" class="submit" class="btn btn-primary btn-lg btn-block" value="添加">
+                            </div>
+                    </form>
+                </div>
+                <script type="text/javascript">
+                    //插入地图
+                    var map = new AMap.Map("map", {
+                        resizeEnable: true,
+
+                        zoom: 18,
+
+                    });
+
+                    //为地图注册click事件获取鼠标点击出的经纬度坐标
+                    var clickEventListener = map.on('click', function(e) {
+                        document.getElementById("lat").value = e.lnglat.getLng() + ',' + e.lnglat.getLat();
+                        document.getElementById("longitude").value = parseFloat(e.lnglat.getLng());
+                        document.getElementById("latitude").value = parseFloat(e.lnglat.getLat());
+                        if (marker) {
+                            marker.setMap(null);
+                            marker = null;
+                        }
+                        addMarker(e.lnglat.getLng(),e.lnglat.getLat());
+                        //这边是数组
+                        var lnglatXY=[e.lnglat.getLng(),e.lnglat.getLat()];
+
+                    });
+
+                    var marker;
+                    // 实例化点标记
+                    function addMarker(lng,lat) {
+                        marker = new AMap.Marker({
+                            icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+                            position: [lng, lat]
+                        });
+                        marker.setMap(map);
+                    }
+                </script>
+            </div>
+        </div>
+
+    </div>
+    </div>
+</div><!-- .animated -->
+
+<!--引入base-->
+<div id="newbase"></div>
+<!--导入布局js-->
+<script type="text/javascript" src="static/assets/js/include.js"></script>
+
+</body>
+</html>
